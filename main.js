@@ -153,10 +153,16 @@ function showComboPopup(text) {
 
 // ---- Game Loop ----
 function startGame() {
+    // Clean up any previous game loop
+    if (animFrameId) cancelAnimationFrame(animFrameId);
+    if (gameLoopId) clearInterval(gameLoopId);
+
     audio.init();
     showScreen('game');
     pauseOverlay.classList.add('hidden');
     gameoverOverlay.classList.add('hidden');
+    document.getElementById('btn-save-score').disabled = false;
+    document.getElementById('btn-save-score').textContent = 'SAVE SCORE';
 
     game = new TetrisGame(gameCanvas, holdCanvas, nextCanvas);
     game.onScoreUpdate = onScoreUpdate;
@@ -252,12 +258,13 @@ document.addEventListener('keydown', (e) => {
         case ' ':
             e.preventDefault();
             if (!game.paused) {
+                const dropX = game.current ? game.current.x : 5;
                 const dropped = game.hardDrop();
                 if (dropped > 0) {
                     audio.hardDrop();
                     const rect = gameCanvas.getBoundingClientRect();
                     particles.spawnDropTrail(
-                        rect.left + (game.current ? game.current.x : 5) * game.cellSize + game.cellSize,
+                        rect.left + dropX * game.cellSize + game.cellSize,
                         rect.top + rect.height - 20
                     );
                 }
