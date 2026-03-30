@@ -36,6 +36,7 @@ class AudioEngine {
     startMusic() {
         if (!this.ctx || this.musicPlaying) return;
         this.musicPlaying = true;
+        this.scheduledOscillators = [];
 
         const melody = [
             // Korobeiniki melody notes [freq, duration]
@@ -55,6 +56,7 @@ class AudioEngine {
         let nextTime = this.ctx.currentTime;
 
         const scheduleNotes = () => {
+            if (!this.musicPlaying) return;
             while (nextTime < this.ctx.currentTime + 0.5) {
                 const [freq, dur] = melody[noteIndex % melody.length];
                 const actualDur = dur * 0.9;
@@ -70,6 +72,7 @@ class AudioEngine {
                     gain.connect(this.musicGain);
                     osc.start(nextTime);
                     osc.stop(nextTime + actualDur + 0.05);
+                    this.scheduledOscillators.push(osc);
 
                     // Add subtle bass
                     const bass = this.ctx.createOscillator();
@@ -82,6 +85,7 @@ class AudioEngine {
                     bassGain.connect(this.musicGain);
                     bass.start(nextTime);
                     bass.stop(nextTime + actualDur + 0.05);
+                    this.scheduledOscillators.push(bass);
                 }
 
                 nextTime += dur * 0.5; // Speed factor
@@ -98,6 +102,14 @@ class AudioEngine {
         if (this.musicInterval) {
             clearInterval(this.musicInterval);
             this.musicInterval = null;
+        }
+        // Stop all scheduled oscillators immediately
+        if (this.scheduledOscillators) {
+            const now = this.ctx ? this.ctx.currentTime : 0;
+            for (const osc of this.scheduledOscillators) {
+                try { osc.stop(now); } catch (e) { /* already stopped */ }
+            }
+            this.scheduledOscillators = [];
         }
     }
 

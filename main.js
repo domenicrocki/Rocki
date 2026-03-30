@@ -91,11 +91,13 @@ function onLineClear(count) {
     lineClearFlash.classList.add('active');
     setTimeout(() => lineClearFlash.classList.remove('active'), 500);
 
-    // Spawn particles at board position
+    // Spawn particles only at the actually cleared rows
     const rect = gameCanvas.getBoundingClientRect();
-    for (let r = 0; r < 20; r++) {
-        // Find cleared rows approximately
-        particles.spawnLineClearParticles(rect.left, rect.top, rect.width, r, game.cellSize);
+    const clearedRows = game.lastClearedRows || [];
+    for (const rowY of clearedRows) {
+        if (rowY >= 0) {
+            particles.spawnLineClearParticles(rect.left, rect.top, rect.width, rowY, game.cellSize);
+        }
     }
 }
 
@@ -136,9 +138,12 @@ function onCombo(combo) {
 function onGameOver(score) {
     audio.stopMusic();
     audio.gameOver();
+    stopDAS();
     finalScoreEl.textContent = `FINAL SCORE: ${score.toLocaleString()}`;
     nameInput.value = '';
     gameoverOverlay.classList.remove('hidden');
+    // Draw one final frame to show the board state, then stop
+    game.draw(performance.now());
     cancelAnimationFrame(animFrameId);
     clearInterval(gameLoopId);
 }
@@ -280,6 +285,7 @@ document.addEventListener('keydown', (e) => {
             game.paused = !game.paused;
             pauseOverlay.classList.toggle('hidden', !game.paused);
             if (game.paused) {
+                stopDAS();
                 audio.stopMusic();
             } else {
                 audio.startMusic();

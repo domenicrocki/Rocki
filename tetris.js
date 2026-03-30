@@ -144,7 +144,7 @@ class TetrisGame {
 
         this.current = { name, shape, color: piece.color, glow: piece.glow, x, y, rotation: 0 };
         this.canHold = true;
-        this.lockDelay = 0;
+        this.dropCounter = 0;
         this.updateGhost();
 
         if (this.collides(this.current.shape, this.current.x, this.current.y)) {
@@ -331,23 +331,25 @@ class TetrisGame {
     }
 
     clearLines() {
-        let cleared = 0;
         const rowsToClear = [];
 
         for (let r = TOTAL_ROWS - 1; r >= 0; r--) {
             if (this.board[r].every(cell => cell !== null)) {
                 rowsToClear.push(r);
-                cleared++;
             }
         }
 
-        // Remove rows and add empty ones at top
+        // Store cleared row positions (visible row index) for particle effects
+        this.lastClearedRows = rowsToClear.map(r => r - HIDDEN_ROWS);
+
+        // Sort descending so splice doesn't shift later indices
+        rowsToClear.sort((a, b) => b - a);
         for (const row of rowsToClear) {
             this.board.splice(row, 1);
             this.board.unshift(Array(COLS).fill(null));
         }
 
-        return cleared;
+        return rowsToClear.length;
     }
 
     getDropInterval() {
@@ -405,9 +407,9 @@ class TetrisGame {
             }
         }
 
-        // Ghost piece
-        if (this.current && !this.gameOver) {
-            const { shape, x } = this.current;
+        // Ghost piece (only if not overlapping with current piece)
+        if (this.current && !this.gameOver && this.ghostY !== this.current.y) {
+            const { shape, x, color } = this.current;
             for (let r = 0; r < shape.length; r++) {
                 for (let c = 0; c < shape[r].length; c++) {
                     if (!shape[r][c]) continue;
@@ -415,9 +417,11 @@ class TetrisGame {
                     if (drawY >= 0) {
                         ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
                         ctx.fillRect((x + c) * cs + 1, drawY * cs + 1, cs - 2, cs - 2);
-                        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+                        ctx.strokeStyle = color;
+                        ctx.globalAlpha = 0.25;
                         ctx.lineWidth = 1;
                         ctx.strokeRect((x + c) * cs + 1, drawY * cs + 1, cs - 2, cs - 2);
+                        ctx.globalAlpha = 1;
                     }
                 }
             }
