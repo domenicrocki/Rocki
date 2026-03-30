@@ -363,10 +363,8 @@ class TetrisGame {
         if (this.dropCounter >= this.getDropInterval()) {
             this.dropCounter = 0;
             if (!this.moveDown()) {
-                this.lockDelay++;
-                if (this.lockDelay >= this.lockDelayMax) {
-                    this.lockPiece();
-                }
+                // Piece can't move down — lock immediately and spawn next
+                this.lockPiece();
             }
         }
     }
