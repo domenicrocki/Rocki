@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TETRIS // NEON FUTURE</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="particles-bg"></div>
+    <div id="scanlines"></div>
+
+    <!-- Start Screen -->
+    <div id="start-screen" class="screen active">
+        <div class="logo-container">
+            <h1 class="glitch" data-text="TETRIS">TETRIS</h1>
+            <p class="subtitle">// NEON FUTURE EDITION //</p>
+        </div>
+        <div class="menu">
+            <button class="neon-btn" id="btn-start">START GAME</button>
+            <button class="neon-btn" id="btn-controls">CONTROLS</button>
+            <button class="neon-btn" id="btn-highscores">HIGHSCORES</button>
+        </div>
+        <div class="version">v2.0 // QUANTUM ENGINE</div>
+    </div>
+
+    <!-- Controls Screen -->
+    <div id="controls-screen" class="screen">
+        <h2 class="section-title">CONTROLS</h2>
+        <div class="controls-grid">
+            <div class="control-item"><span class="key">←</span><span>Move Left</span></div>
+            <div class="control-item"><span class="key">→</span><span>Move Right</span></div>
+            <div class="control-item"><span class="key">↓</span><span>Soft Drop</span></div>
+            <div class="control-item"><span class="key">↑</span><span>Rotate</span></div>
+            <div class="control-item"><span class="key">SPACE</span><span>Hard Drop</span></div>
+            <div class="control-item"><span class="key">C</span><span>Hold Piece</span></div>
+            <div class="control-item"><span class="key">P</span><span>Pause</span></div>
+            <div class="control-item"><span class="key">M</span><span>Mute</span></div>
+        </div>
+        <button class="neon-btn" id="btn-back-controls">BACK</button>
+    </div>
+
+    <!-- Highscores Screen -->
+    <div id="highscores-screen" class="screen">
+        <h2 class="section-title">HIGHSCORES</h2>
+        <div id="highscore-list" class="highscore-list"></div>
+        <button class="neon-btn" id="btn-back-scores">BACK</button>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen" class="screen">
+        <div class="game-layout">
+            <!-- Left Panel -->
+            <div class="side-panel left-panel">
+                <div class="panel-box">
+                    <h3>HOLD</h3>
+                    <canvas id="hold-canvas" width="120" height="120"></canvas>
+                </div>
+                <div class="panel-box stats-box">
+                    <h3>STATS</h3>
+                    <div class="stat-row"><span>SCORE</span><span id="score">0</span></div>
+                    <div class="stat-row"><span>LEVEL</span><span id="level">1</span></div>
+                    <div class="stat-row"><span>LINES</span><span id="lines">0</span></div>
+                    <div class="stat-row"><span>COMBO</span><span id="combo">0</span></div>
+                </div>
+            </div>
+
+            <!-- Main Board -->
+            <div class="board-container">
+                <canvas id="game-canvas"></canvas>
+                <div id="pause-overlay" class="overlay hidden">
+                    <div class="overlay-text glitch" data-text="PAUSED">PAUSED</div>
+                    <button class="neon-btn" id="btn-resume">RESUME</button>
+                </div>
+                <div id="gameover-overlay" class="overlay hidden">
+                    <div class="overlay-text glitch" data-text="GAME OVER">GAME OVER</div>
+                    <div id="final-score" class="final-score"></div>
+                    <input type="text" id="name-input" class="name-input" placeholder="ENTER NAME" maxlength="10">
+                    <button class="neon-btn" id="btn-save-score">SAVE SCORE</button>
+                    <button class="neon-btn" id="btn-restart">PLAY AGAIN</button>
+                    <button class="neon-btn" id="btn-menu">MAIN MENU</button>
+                </div>
+            </div>
+
+            <!-- Right Panel -->
+            <div class="side-panel right-panel">
+                <div class="panel-box">
+                    <h3>NEXT</h3>
+                    <canvas id="next-canvas" width="120" height="360"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Line Clear Flash -->
+    <div id="line-clear-flash" class="line-clear-flash"></div>
+
+    <!-- Combo Popup -->
+    <div id="combo-popup" class="combo-popup"></div>
+
+    <script src="audio.js"></script>
+    <script src="particles.js"></script>
+    <script src="tetris.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
